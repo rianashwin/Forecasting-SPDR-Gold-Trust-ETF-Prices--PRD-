@@ -10,7 +10,18 @@ Data sourced from [Yahoo! Finance](https://finance.yahoo.com/) using an API (exp
 
 | Symbol                 | Description | Reasoning | URL | 
 | :---                    | --- | --- | --- |
-| GLD            | SPDR_Gold_Shares | | https://finance.yahoo.com/quote/GLD/profile?p=GLD |
+| GLD            | SPDR_Gold_Shares | This is the target variable| https://finance.yahoo.com/quote/GLD/profile?p=GLD |
+| GC=F            | Gold_Futures | Future of alternatives, indicates confidence | https://finance.yahoo.com/quote/GC=F/ |
+| CL=F            | Crude_Oil_Futures | Future of alternatives, indicates confidence | https://finance.yahoo.com/quote/GC=F/ |
+| PA=F            | Palladium_Futures | Future of alternatives, indicates confidence | https://finance.yahoo.com/quote/GC=F/ |
+| PL=F            | Platinum_Futures | Future of alternatives, indicates confidence | https://finance.yahoo.com/quote/GC=F/ |
+| HG=F            | Copper_Futures | Future of alternatives, indicates confidence | https://finance.yahoo.com/quote/GC=F/ |
+| ^GSPC            | SP_500 | Performance of alternatives, for large cap| https://finance.yahoo.com/quote/GC=F/ |
+| ^RUT            | Russell_2000 | Performance of alternatives, for large cap| https://finance.yahoo.com/quote/GC=F/ |
+| DX=F            | US_Dollar_Index | Performance of safe-haven for companies | https://finance.yahoo.com/quote/GC=F/ |
+| 6S=F            | Swiss_Francs_Index | Performance of safe-haven for companies | https://finance.yahoo.com/quote/GC=F/ |
+| 6E=F            | EURO_Index | Performance of safe-haven for companies | https://finance.yahoo.com/quote/GC=F/ |
+| 6J=F            | Yen_Index | Performance of safe-haven for companies | https://finance.yahoo.com/quote/GC=F/ |
 
 
 ## References
