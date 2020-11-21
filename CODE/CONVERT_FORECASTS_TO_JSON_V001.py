@@ -21,7 +21,7 @@ def convert_forecasts_to_json():
             for row in reader:
                 
                 final_data[row["Horizon"]]= {
-                    "Predicted SDPR Gold ETF Prices (USD)" : row["Predicted - Descaled"]
+                    "Predicted SDPR Gold ETF Prices (USD)" : row["Predicted - Descaled"][1:-2]
                 }
             
             json.dump(final_data, jsonfile)
