@@ -146,7 +146,8 @@ training_and_validation_data = training_and_validation_data[training_and_validat
 # (we need to ensure all are in one so that we can create the same columns for subsequent preprocessing steps)
 cleansed_data = training_and_validation_data.append(true_data)
 cleansed_data.reset_index(drop=True,inplace=True)
-print("Total rows: ", cleansed_data.shape[0])
+if my_verbose == "True":
+    print("Total rows: ", cleansed_data.shape[0])
 
 # engineer new features expect for target. target is highly correlated with Gold Futures
 cols_to_calculate = [x for x in cleansed_data.columns.tolist() if not x.endswith("SPDR_Gold_Shares")]
