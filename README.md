@@ -93,6 +93,24 @@ Key insights noted in our dataset are available [here](https://github.com/rianas
 ## Results
 We have evaluated our model against a holdout test set of 90 days, forecasting from t=0 at 14th July 2020. Results are summarised [here](https://github.com/rianashwin/Forecasting-SPDR-Gold-Trust-ETF-Prices--PRD-/wiki/4.-Results).
 
+## Moving forward
+There are number of areas we can improve on
+
+### 1. Overcome overfitting
+As explained [here](https://github.com/rianashwin/Forecasting-SPDR-Gold-Trust-ETF-Prices--PRD-/wiki/4.-Results), we seem to be overfitting to the training set. In this first attempt, we did not spend much time tuning our models to handle this. We can consider tuning our decision trees better moving forward.
+
+### 2. More data
+We should ideally aim to obtain data around supply. This is possible be a key determinant for gold prices. We can likely identify supply of key exporting nations, and use that as a proxy of global supply.
+
+### 3. Saving historical forecasts
+At present, we overwrite our forecasts at each run. Ideally, we should saving our forecasts to a database, indexed by date of model run. We should also ideally store our raw data in a database for future use, instead of always running the query from 2011.
+
+### 4. Investigate t=2000
+As noted [here](https://github.com/rianashwin/Forecasting-SPDR-Gold-Trust-ETF-Prices--PRD-/wiki/3.-Exploratory-data-analysis), we see a shift in our relationsips at t=2000. We did not dive deeper into what happened here. However, looking into this may give us an insight into whether there has been a fundamental change in the relationships between our variables.
+
+
+
+
 ## References
 * https://oilprice.com/Energy/Energy-General/The-Energy-Model-That-Can-Predict-Gold-Prices.html
 * https://investorplace.com/2011/07/5-hard-asset-alternatives-to-gold/
