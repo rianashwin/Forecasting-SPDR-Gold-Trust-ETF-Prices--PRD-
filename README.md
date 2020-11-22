@@ -112,6 +112,8 @@ At present, we overwrite our forecasts at each run. Ideally, we should saving ou
 As noted [here](https://github.com/rianashwin/Forecasting-SPDR-Gold-Trust-ETF-Prices--PRD-/wiki/3.-Exploratory-data-analysis), we see a shift in our relationsips at t=2000. We did not dive deeper into what happened here. However, looking into this may give us an insight into whether there has been a fundamental change in the relationships between our variables.
 
 
+## Licensing
+This project is licensed under the terms of the MIT license.
 
 
 ## References
