@@ -44,8 +44,8 @@ You can also create this environment from the [environment.yml](https://github.c
 The following is the expected project structure. These folders are created by the script itself, however, there is a configuration file that is required before running, indicated below.
 
 ```
-├── .gitignore                          <- Files that should be ignored by git. Add seperate .gitignore files in sub folders if 
-│                               needed
+├── .gitignore                          <- Files that should be ignored by git. Add seperate .gitignore files in sub folders if needed
+│                               
 ├── environment.yml                     <- Conda environment definition for ensuring consistent setup across environments
 ├── LICENSE
 ├── README.md                           <- The top-level README for developers using this project.
