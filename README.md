@@ -1,5 +1,5 @@
 # Forecasting-SPDR-Gold-Trust-ETF-Prices (PRD)
-This project aims to forecast [SPDR Gold Trust ETF (NYSEARCA: GLD)](https://finance.yahoo.com/quote/GLD/profile?p=GLD) for t=+1 to t=+90. We then build a simple flask app to provide an endpoint to retrieve these forecasts.
+This project aims to forecast daily [SPDR Gold Trust ETF (NYSEARCA: GLD)](https://finance.yahoo.com/quote/GLD/profile?p=GLD) prices in USD the next 90-days ie for the period t=+1, t=+2, t=+3.... to t=+90. We then build a simple Flask app to provide an endpoint to retrieve these forecasts.
 
 ## Background
 
