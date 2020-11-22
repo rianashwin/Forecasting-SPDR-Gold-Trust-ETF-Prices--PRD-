@@ -23,6 +23,14 @@ Data sourced from [Yahoo! Finance](https://finance.yahoo.com/) using an API (exp
 | 6E=F            | EURO_Index | Performance of safe-haven for companies | https://finance.yahoo.com/quote/6E=F/ |
 | 6J=F            | Yen_Index | Performance of safe-haven for companies | https://finance.yahoo.com/quote/6J=F/ |
 
+## Requirements
+There are a number of key packages used. Aside from the usual suspects of pandas, matplotlib, numpy, sklearn and keras, we need to use a python module that allows us to query data from Yahoo! Financials. Further notes for this package is available via [PyPI](https://pypi.org/project/yahoofinancials/). We can install this by running the following
+
+    python -m pip install yahoofinancials
+    
+List of packages can be found [here](https://github.com/rianashwin/Forecasting-SPDR-Gold-Trust-ETF-Prices--PRD-/blob/main/requirements.txt). Installation can be completed using conda, as follows:
+    
+    conda create --name <env> --file <this file>
 
 ## References
 * https://oilprice.com/Energy/Energy-General/The-Energy-Model-That-Can-Predict-Gold-Prices.html
