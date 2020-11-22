@@ -71,6 +71,8 @@ The following is the expected project structure. These folders are created by th
 │   ├── saved_descaled_data.csv         <- Saved copy of processed data, with min-max scaling removed. Used for diagnosing model performance. Regenerated each time RUN_PIPELINE.py is executed.
 │   └── saved_scaled_data.csv            <- Saved copy of processed data, with min-max scaling applied. Used for diagnosing model performance. Regenerated each time RUN_PIPELINE.py is executed.
 │
+├── IMAGES                              <- Images used in project wiki 
+|
 └── SAMPLE_RESULTS                      <- Example run of modelling script, with a holdout testset of 90 days, forecasing from t=0 at 14th July 2020 
     └── Multi_1_to_90_days_DEV.ipynb    <- Sample script with debug mode (visualisation of results) to exhibit results of model. RAW_DATA_TEST_PRD_SCRIPT
     ├── RAW_DATA_TEST_PRD_SCRIPT.csv    <- Sample data, up to 14th July 2020
