@@ -87,6 +87,9 @@ You can find a step-by-step guide to run this project [here](https://github.com/
 ## Pipeline explanation
 A walkthrough of the start-to-end script logic is available [here](https://github.com/rianashwin/Forecasting-SPDR-Gold-Trust-ETF-Prices--PRD-/wiki/2.-Pipeline-explanation).
 
+## Technical documentation
+Docstrings of functions used can be found [here](https://github.com/rianashwin/Forecasting-SPDR-Gold-Trust-ETF-Prices--PRD-/wiki/5.-Technical-documentation).
+
 ## Exploratory data analysis
 Key insights noted in our dataset are available [here](https://github.com/rianashwin/Forecasting-SPDR-Gold-Trust-ETF-Prices--PRD-/wiki/3.-Exploratory-data-analysis).
 
