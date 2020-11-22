@@ -1,3 +1,18 @@
+"""
+Main script to run the entire pipeline.
+
+This script runs the following:
+1. Gets data from Yahoo!Finance
+2. Processes and transforms data
+3. Trains models and selects best model
+4. Generates and saves forecasts for each horizon
+5. Converts forecasts to json for consumption in flask
+
+Further notes can be found here: https://github.com/rianashwin/Forecasting-SPDR-Gold-Trust-ETF-Prices--PRD-/wiki/2.-Pipeline-explanation
+
+This scripts expects a list containing the tickers to extract from Yahoo!Finance.
+"""
+
 #######################################################
 # Load Python packages
 #######################################################

@@ -1,13 +1,29 @@
+"""
+Script containing various functions for data processing, modelling and generating forecasts.
+"""
+
 from __main__ import *
 
 #######################################################
 # Define functions
 #######################################################
 def remove_missing_targets(this_data,target_var):
-    '''
-    arg: target
-    outputs: raw data without rows where target is missing
-    '''
+    """
+    Gets raw data and removes rows with missing targets
+
+    Parameters
+    ----------
+    this_data : dataframe
+        The raw data which has been compiled from Yahoo!Finance
+    target_var : string
+        Column name of target variable
+
+    Returns
+    -------
+    this_data
+        A dataframe without missing targets
+    """
+
     this_data = this_data[~this_data[target_var].isnull()]
     this_data = this_data[~this_data["Date"].isnull()]
         
@@ -15,9 +31,22 @@ def remove_missing_targets(this_data,target_var):
     
 
 def treat_missing_feature_values_adjusted(my_verbose, this_data):
-    '''
-    outputs: interpolates missing values
-    '''
+    """
+    Gets raw data and replaces 0 values with np.nan
+
+    Parameters
+    ----------
+    my_verbose : string
+        parameter to control printing of steps
+    this_data : dataframe
+        The raw data which has missing targets removed
+
+    Returns
+    -------
+    this_data
+        A dataframe without 0 values
+    """ 
+
     cols_to_adj = ["Swiss_Francs_Index", "EURO_Index", "Yen_Index"]
     this_data[cols_to_adj] = this_data[cols_to_adj].replace({0:np.nan})
     this_data.loc[~(this_data['Crude_Oil_Futures'] > 0), 'Crude_Oil_Futures']=np.nan    
@@ -31,9 +60,22 @@ def treat_missing_feature_values_adjusted(my_verbose, this_data):
 
 
 def detrend_data(this_data,my_verbose):
-    '''
-    Fits polynomials to trend lines and calculates difference
-    '''
+    """
+    Gets training and validation data, and performs detrending
+
+    Parameters
+    ----------
+    my_verbose : string
+        parameter to control printing of steps
+    this_data : dataframe
+        The training and validation dataset
+
+    Returns
+    -------
+    detrended_data
+        A dataframe containing detrended data
+    """
+
     dict_degrees = {
         'SPDR_Gold_Shares': 2,
         'Gold_Futures': 2,
@@ -96,9 +138,24 @@ def detrend_data(this_data,my_verbose):
 
 
 def remove_outliers(this_data,stdev_multiplier,my_verbose):
-    '''
-    Removes outliers which are beyond certain threshold based on st dev
-    '''
+    """
+    Gets detrended training and validation data, identifies outliers, and removes from dataset
+
+    Parameters
+    ----------
+    my_verbose : string
+        parameter to control printing of steps and plotting of outlier graphs
+    this_data : dataframe
+        The training and validation dataset
+    stdev_multiplier : float
+        Number of standard deviations to use as threshold for outliers
+
+    Returns
+    -------
+    this_data
+        A dataframe containing detrended data without outliers
+    """ 
+
     detrended_features = [x for x in this_data.columns.tolist() if x != "Date" and x.endswith("detrended")]
 
     for this_feature in detrended_features:
@@ -125,9 +182,24 @@ def remove_outliers(this_data,stdev_multiplier,my_verbose):
 
 
 def calculate_macd_and_spreadvssignal(my_verbose, this_data, cols_to_calculate):
-    '''
-    outputs: dataframe with macd and macd vs spread for each shifted_col
-    '''    
+    """
+    Gets full dataset, and calculates MACD and spread between MACD and signal
+    Important to use full dataset to ensure columns are same between training and test data.
+
+    Parameters
+    ----------
+    my_verbose : string
+        parameter to control printing of steps and plotting of outlier graphs
+    this_data : dataframe
+        The training + validation + test dataset
+    cols_to_calculate : list
+        All columns aside from target variable. Target var is highly correlated with one of Gold futures, thus not necessary to include
+
+    Returns
+    -------
+    this_data
+        A dataframe containing additional MACD and MACD-Signal spread per feature
+    """  
     
     for this_col in cols_to_calculate:
 
@@ -149,10 +221,26 @@ def calculate_macd_and_spreadvssignal(my_verbose, this_data, cols_to_calculate):
 
 
 def calculate_moving_averages(my_verbose, this_data, cols_to_calculate):
-    '''
-    outputs: dataframe with spread of price vs SMA and EMA, with rows with missing SMA removed
-    '''    
+    """
+    Gets full dataset with MACD and spread between MACD and signal, and calculates for each feature
+    price returns over the EMA and SMA over different windows
 
+    Parameters
+    ----------
+    my_verbose : string
+        parameter to control printing of steps and plotting of outlier graphs
+    this_data : dataframe
+        The training + validation + test dataset
+    cols_to_calculate : list
+        All columns aside from target variable. Target var is highly correlated with one of Gold futures, thus not necessary to include
+
+    Returns
+    -------
+    this_data
+        A dataframe containing additional features for price vs EMA and SMA, with the first 90 rows removed
+        These 90 rows will have null values
+    """  
+    
     for this_col in cols_to_calculate:
         this_data['{}/15SMA'.format(this_col)] = (this_data[this_col]/(this_data[this_col].rolling(window=15).mean()))-1
         this_data['{}/30SMA'.format(this_col)] = (this_data[this_col]/(this_data[this_col].rolling(window=30).mean()))-1
@@ -178,10 +266,25 @@ def calculate_moving_averages(my_verbose, this_data, cols_to_calculate):
 
 
 def scale_data(this_data, target_var):
-    '''
-    scales features and targets separately
-    '''        
+    """
+    Gets full dataset, splits between training and test, then fits MinMax scaler to train, and transforms train and test
+    Two separate scalers for target and features, as we want to be able to call the target scaler later to inverse transform predictions
 
+    Parameters
+    ----------
+    this_data : dataframe
+        The training + validation + test dataset
+    target_var : string
+        target variable
+
+    Returns
+    -------
+    this_data
+        A dataframe of scaled data
+    this_y_scaler
+        Scaler of target variable
+    """  
+    
     selected_cols = [x for x in this_data.columns.tolist() if x!="Date" and x!=target_var]
 
     # fit on training & validation, transform training & validation, and true
@@ -208,9 +311,25 @@ def scale_data(this_data, target_var):
 
 
 def inverse_scale_target(this_scaler,this_data,target_var):
-    '''
-    function to descale target
-    ''' 
+    """
+    Gets an array of predictions, inverse transforms with provided y_scaler,
+    and appends to a dataframe with a single column labelled as target_var 
+
+    Parameters
+    ----------
+    this_scaler : scaler object
+        Scaler of target variable
+    this_data : array
+        Predictions      
+    target_var : string
+        target variable
+
+    Returns
+    -------
+    descaled_data
+        A dataframe of descaled data
+    """  
+    
     descaled_data = this_scaler.inverse_transform(this_data)
 
     descaled_data = pd.DataFrame(data=descaled_data,columns=[target_var])
@@ -219,11 +338,27 @@ def inverse_scale_target(this_scaler,this_data,target_var):
 
 
 def shift_values(my_verbose, this_data, forecasting_horizon, target_var):
-    '''
-    arg:
-    - forecasting horizon
-    - target_var. We still shift the target var so that we can calculate lagged macd and spread
-    '''    
+    """
+    Gets a dataframe of all data (training and test), and shifts according to provided horizon
+    Is called in a loop of forecasting horizons
+
+    Parameters
+    ----------
+    my_verbose : string
+        parameter to control printing of steps    
+    forecasting_horizon : integer
+        timestamp we are forecasting
+    this_data : dataframe
+        Full dataset      
+    target_var : string
+        target variable
+
+    Returns
+    -------
+    placeholder_shifted_data
+        A dataframe of shifted data
+    """ 
+
     this_data = this_data.reset_index()
     this_data.drop("index",axis=1,inplace=True)
     df_appended = this_data.copy()
@@ -243,15 +378,33 @@ def shift_values(my_verbose, this_data, forecasting_horizon, target_var):
         if this_col != target_var:
             placeholder_shifted_data.drop(this_col,axis=1,inplace=True)
         
-    placeholder_shifted_data = placeholder_shifted_data.iloc[forecasting_horizon:]
+    placeholder_shifted_data = placeholder_shifted_data.iloc[forecasting_horizon:] # remove top rows as these have missing values
     
     return placeholder_shifted_data
     
     
 def calculate_corr(target_var,min_corr,this_data):    
-    '''
-    calculates correlation and returns features above a certain threshold
-    ''' 
+    """
+    Gets a dataframe of training data, calculates spearman correlation
+    Selects features which have correlation coefficients above the min value provided
+    If none returned, repeats for lower thresholds
+    Is called in a loop of forecasting horizons
+
+    Parameters
+    ----------
+    min_corr : float
+        mininmum correlation coefficient for a feature to be selected   
+    this_data : dataframe
+        Training and validation dataset      
+    target_var : string
+        target variable
+
+    Returns
+    -------
+    temp_df
+        A dataframe consisting of features and their correlations, of features which meet the minimum thresholds
+    """ 
+
     temp_df = pd.DataFrame(this_data.corr(method="spearman")[np.abs(this_data.corr(method="spearman"))>=min_corr].iloc[0,:].copy())
     temp_df.sort_index(inplace=True)
     temp_df = temp_df[~temp_df[target_var].isnull()]
@@ -283,6 +436,23 @@ def calculate_corr(target_var,min_corr,this_data):
     return temp_df
 
 def plot_corr_heatmap(this_data,target_var):
+    """
+    Gets a dataframe of training data and validation data, and plots spearman correlation heatmap
+    Is called in a loop of forecasting horizons, but only if environment is "QAS"
+
+    Parameters
+    ----------
+    this_data : dataframe
+        Training and validation dataset      
+    target_var : string
+        target variable
+
+    Returns
+    -------
+    plt.show()
+        A seaborn heatmpa
+    """ 
+
     if len(this_data)>1:
         sns.heatmap(this_data.sort_values(by=target_var,ascending=False))
         plt.show()
@@ -292,23 +462,78 @@ def plot_corr_heatmap(this_data,target_var):
     return plt.show()
 
 
-def plot_scaled_scatter(this_data, selected_col, target):
+def plot_scaled_scatter(this_data, selected_col, target_var):
+    """
+    Gets a dataframe of training data and validation data, and a column to plot against the target variable 
+    Is called in a loop of features which exceed the minimum correlation coefficient, but only if environment is "QAS"
+
+    Parameters
+    ----------
+    this_data : dataframe
+        Training and validation dataset, with features which have sufficiently high correlation     
+    selected_col : string
+        feature to plot
+    target_var : string
+        target variable
+
+    Returns
+    -------
+    plt.show()
+        A scatter plot of target vs feature
+    """ 
 
     this_scaler = MinMaxScaler(feature_range=(0, 1))
-    selected_data = this_scaler.fit_transform(this_data[[target, selected_col]])
-    selected_data = pd.DataFrame(selected_data,columns=[target, selected_col])
+    selected_data = this_scaler.fit_transform(this_data[[target_var, selected_col]])
+    selected_data = pd.DataFrame(selected_data,columns=[target_var, selected_col])
 
     plt.figure(figsize=(16,5)) 
-    plt.title('Scatter of {} (X) with {} (Y)'.format(target, selected_col))
-    plt.scatter(selected_data[target].values, selected_data[selected_col].values)
+    plt.title('Scatter of {} (X) with {} (Y)'.format(target_var, selected_col))
+    plt.scatter(selected_data[target_var].values, selected_data[selected_col].values)
     
     return plt.show()
 
 
 def split_train_validation_true_data(target_var, this_cols_retain, this_training_and_validation_data, this_true_data, test_size):
-    '''
-    splits train and validation set
-    '''     
+    """
+    Gets a dataframe of training data and validation data, and test data separately, 
+    as well as a set of features which have been shown to have sufficiently high correlation with target.
+
+    Splits the training and validation data into separate datasets, with these selected features
+
+    Also receives the single test row, which is the forecasting-horizon-th row in the dataset
+    This row is then returned with only the selected features
+
+    Is called in a loop of features which exceed the minimum correlation coefficient, but only if environment is "QAS"
+
+    Parameters
+    ----------
+    target_var : string
+        target variable
+    this_cols_retain : list
+        List of selected features
+    this_training_and_validation_data : dataframe
+        Training and validation dataset
+    this_true_data : dataframe
+        Single row of test data, which is the forecasting-horizon-th row in the dataset
+    test_size : float
+        Float between 0 and 1, to decide validation size (actual test size is always one row)                                            
+
+    Returns
+    -------
+    X_train
+        Predictors dataset for training
+    X_val
+        Predictors dataset for validation
+    y_train
+        Target dataset for training 
+    y_val
+        Target dataset for validation 
+    this_training_and_validation_data
+        Training and validation dataset, with selected columns only
+    this_true_data
+        Test dataset, with selected columns only                                               
+    """ 
+
     this_training_and_validation_data = this_training_and_validation_data[this_cols_retain]
     this_true_data = this_true_data[this_cols_retain]
 
@@ -322,9 +547,24 @@ def split_train_validation_true_data(target_var, this_cols_retain, this_training
 
 
 def mean_absolute_percentage_error(y_true, y_pred): 
-    '''
-    function to calculate MAPE
-    '''    
+    """
+    Calculates MAPE for an array of actual vs an array predicted values of target
+
+    Parameters
+    ----------
+    y_true : array
+        Actuals values of target   
+    y_pred : array
+        Actuals values of target
+
+    Returns
+    -------
+    np.mean(temp_mape) * 100
+        A float equal to MAPE
+    temp_mape
+        A list of absolute percentage errors for each actual-predicted pair
+    """ 
+
     temp_mape = []
     for this_true, this_pred in zip(y_true, y_pred):
         temp_val = np.abs((this_true - this_pred) / this_true)
@@ -335,9 +575,45 @@ def mean_absolute_percentage_error(y_true, y_pred):
 
 
 def train_and_select_model(my_verbose, metric, this_training_x, this_validation_x, this_training_y, this_validation_y, target_var, this_y_scaler):
-    '''
-    Train model, evaluate on validation set
-    '''
+    """
+    Loops through each model, fits on training and evaluates on validation set
+    Uses this_y_scaler to inverse transform predictions
+    Calculates error based on chosen metric
+    Is called in a loop of features which exceed the minimum correlation coefficient
+
+    Parameters
+    ----------
+    my_verbose : string
+        parameter to control printing of steps
+    metric : string
+        Metric to rank models (RMSE or MAPE)
+    this_training_x : dataframe
+        Predictors dataset for training               
+    this_validation_x : dataframe
+        Predictors dataset for training 
+    this_training_y
+        Target dataset for training 
+    this_validation_y
+        Target dataset for validation 
+    this_y_scaler : scaler object
+        Scaler of target variable
+    target_var : string
+        target variable
+
+    Returns
+    -------
+    y_true
+        Array of inverse transform actual targets from validation set
+    best_y_pred
+        Array of predictions from best model, also inversed transformed
+    best_model
+        List containing name and fitted object of best model
+    best_error
+        Validation error of best model
+    best_rsq
+        R-squared of best model        
+     
+    """ 
 
     # Compile models
     # tune ET, RF: https://stackoverflow.com/a/22546016/6877740
@@ -422,9 +698,25 @@ def train_and_select_model(my_verbose, metric, this_training_x, this_validation_
 
 
 def plot_scatter_actuals_predicted(this_actuals, this_predicted):
-    '''
-    plot actuals vs predicted. The closer to the diagonal, the better.
-    ''' 
+    """
+    Plots scatter of actual vs predicted
+    More values closer to diagonal implies better fit
+
+    Is called in a loop of features which exceed the minimum correlation coefficient, but only if environment is "QAS"
+
+    Parameters
+    ----------
+    y_true : array
+        Array of inverse transform actual targets from validation set
+    best_y_pred : array
+        Array of predictions from best model, also inversed transformed
+
+    Returns
+    -------
+    plt.show()
+        Scatter plot
+    """
+
     fig, ax = plt.subplots(figsize=(5,5))
     ax.scatter(this_actuals, this_predicted, c='black')
     line = mlines.Line2D([0, 1], [0, 1], color='red')
@@ -439,9 +731,39 @@ def plot_scatter_actuals_predicted(this_actuals, this_predicted):
 
 
 def predict_test(this_model, this_true_data, this_y_scaler, target_var, environment):
-    '''
-    predict based on test set. Always uses last time stamp in training set.
-    '''     
+    """
+    Using selected best model for this horizon, generates prediction (which is then inversed transform)
+
+    Is called in a loop of features which exceed the minimum correlation coefficient
+
+    Parameters
+    ----------
+    this_model : list
+        List containing name and fitted object of best model
+    this_true_data : dataframe
+        Test dataset, with selected columns only  
+    this_y_scaler : scaler object
+        Scaler of target variable
+    target_var : string
+        Target variable
+    environment : string
+        If we are in "QAS", we will have actual values, and will therefore return descaled values of actuals
+        If we are in "PRD", returns None for actuals                      
+
+    Returns
+    -------
+    y_test_actual
+        Scaled actual value. None if we are in "PRD" ie this is production environment and truth is not known
+    y_test_actual_descaled
+        Descaled actual value. None if we are in "PRD" ie this is production environment and truth is not known
+    predictions
+        Scaled predicted value.
+    y_pred
+        Descaled predicted value.
+    this_model_name
+        Returns name of model used for prediction
+    """
+
     this_model_name = this_model[0]
     this_regressor = this_model[1]
     
@@ -472,9 +794,25 @@ def predict_test(this_model, this_true_data, this_y_scaler, target_var, environm
 
 
 def generate_test_results(this_test_results,this_prediction_date):
-    '''
-    generates a dataframe with test results
-    '''     
+    """
+    Adds actual values to a dataframe of predictions.
+
+    Is called only if in "QAS". Outside of loop of horizons
+
+    Parameters
+    ----------
+    this_test_results : dataframe
+        Dataframe containing horizon, scaled prediction, descaled predictions 
+    this_prediction_date : string
+        Date at which predictions are generated from ie t=0. 
+        Note this is not the date when the script is run. 
+
+    Returns
+    -------
+    this_test_results
+        Dataframe of predictions, actuals, date and horizon
+    """
+
     this_actual = this_test_results["Actuals - Descaled"].values
     this_pred = this_test_results["Predicted - Descaled"].values
     
@@ -492,9 +830,21 @@ def generate_test_results(this_test_results,this_prediction_date):
 
 
 def plot_test_results(this_test_results):
-    '''
-    Plots test results
-    '''     
+    """
+    Plots actuals and predicted values according to timestamp.
+
+    Is called only if in "QAS". Outside of loop of horizons
+
+    Parameters
+    ----------
+    this_test_results : dataframe
+        Dataframe containing horizon, scaled prediction, descaled predictions, actuals scaled and descaled
+
+    Returns
+    -------
+    plt.show()
+        Line plots
+    """    
     plt.figure(figsize=(16,5)) 
     plt.title('SPDR Gold Shares (USD): Actuals vs Predicted')
     plt.plot(list(range(0,len(this_test_results))), this_test_results["Actuals - Descaled"].values, label = "Actual")
@@ -510,9 +860,23 @@ def plot_test_results(this_test_results):
 
     
 def inspect_issues(this_test_results, this_cached_scaled_data):
-    '''
-    qas function to pick out samples with highest MAPE
-    '''     
+    """
+    A function which picks out the row which contributes to highest APE in test predictions
+
+    Is called only if in "QAS". Outside of loop of horizons
+
+    Parameters
+    ----------
+    this_test_results : dataframe
+        Dataframe containing horizon, scaled prediction, descaled predictions, actuals scaled and descaled
+    this_cached_scaled_data : dataframe
+        Dataframe containing test data after scaling
+
+    Returns
+    -------
+    plt.show()
+        Line plots of each feature vs target
+    """      
     this_horizon = test_results.sort_values(by="APE",ascending=False).iloc[0].Horizon
     this_APE = test_results.sort_values(by="APE",ascending=False).iloc[0].APE[0]
     print("Highest APE at horizon {}, with APE of {:.2f}".format(this_horizon, this_APE))

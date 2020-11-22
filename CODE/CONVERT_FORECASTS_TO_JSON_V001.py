@@ -1,3 +1,8 @@
+"""
+Script to convert saved forecasts from csv to json
+For ease of consumption by Flask app
+"""
+
 from __main__ import *
 #######################################################
 # Define functions
@@ -5,6 +10,19 @@ from __main__ import *
 
 
 def convert_forecasts_to_json():
+    """
+    Ingests raw data, and outputs as json
+    Json is indexed by horizon, and contains values for descaled predictions
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+    """ 
+       
     fieldnames = (
         "Horizon","Actuals - Scaled","Actuals - Descaled","Predicted - Scaled","Predicted - Descaled", "Model Name"
     )

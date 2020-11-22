@@ -1,3 +1,7 @@
+"""
+Script to extract data from Yahoo! Finance
+"""
+
 from __main__ import *
 
 #######################################################
@@ -5,10 +9,21 @@ from __main__ import *
 #######################################################
 
 def create_placeholder_df(start_date, end_date):
-    '''
-    arg: start and end dates to pull data
-    outputs: single dataframe indexed by date, placeholder for merging in next step
-    '''    
+    """
+    Creates placholder dataframe with one row per each date within specified range
+
+    Parameters
+    ----------
+    start_date : string
+        Date to start pulling data from
+    end_date : string
+        Date to end pulling data
+
+    Returns
+    -------
+    placeholder_df
+        A dataframe with one row per each date within specified range
+    """  
     
     placeholder_df_index = pd.date_range(start_date, end_date)
     placeholder_df = pd.DataFrame({'Date':placeholder_df_index})
@@ -16,10 +31,24 @@ def create_placeholder_df(start_date, end_date):
     return placeholder_df
 
 def compile_data(start_date, end_date, placeholder_df, ticker_list):
-    '''
-    arg: sheet of tickers to extract from Yahoo Finance
-    outputs: single dataframe indexed by date, with one column for adjusted closing prices for each ticker
-    '''
+    """
+    Extracts data from Yahoo! Finance and outputs to csv
+
+    Parameters
+    ----------
+    start_date : string
+        Date to start pulling data from
+    end_date : string
+        Date to end pulling data
+    placeholder_df : dataframe
+        A dataframe with one row per each date within specified range
+    ticker_list: dataframe
+        A dataframe containing ticker symbol and description
+
+    Returns
+    -------
+    None
+    """  
 
     print(placeholder_df.shape)
 
