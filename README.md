@@ -31,6 +31,10 @@ There are a number of key packages used. Aside from the usual suspects of pandas
 List of packages can be found [here](https://github.com/rianashwin/Forecasting-SPDR-Gold-Trust-ETF-Prices--PRD-/blob/main/requirements.txt). Installation can be completed using conda, as follows:
     
     conda create --name <env> --file <this file>
+    
+You can also create this environment from the [environment.yml](https://github.com/rianashwin/Forecasting-SPDR-Gold-Trust-ETF-Prices--PRD-/blob/main/environment.yml) file by running the following:
+
+    conda env create -f environment.yml
 
 ## References
 * https://oilprice.com/Energy/Energy-General/The-Energy-Model-That-Can-Predict-Gold-Prices.html
