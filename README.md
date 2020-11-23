@@ -103,7 +103,7 @@ There are number of areas we can improve on
 As explained [here](https://github.com/rianashwin/Forecasting-SPDR-Gold-Trust-ETF-Prices--PRD-/wiki/4.-Results), we seem to be overfitting to the training set. In this first attempt, we did not spend much time tuning our models to handle this. We can consider tuning our decision trees better moving forward.
 
 ### 2. More data
-We should ideally aim to obtain data around supply. This is possible be a key determinant for gold prices. We can likely identify supply of key exporting nations, and use that as a proxy of global supply.
+We should ideally aim to obtain data around supply. This is possibly a key determinant of gold prices. We can likely identify supply of key exporting nations, and use that as a proxy of global supply.
 
 ### 3. Saving historical forecasts
 At present, we overwrite our forecasts at each run. Ideally, we should saving our forecasts to a database, indexed by date of model run. We should also ideally store our raw data in a database for future use, instead of always running the query from 2011.
