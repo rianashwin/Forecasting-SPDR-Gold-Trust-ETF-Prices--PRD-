@@ -1,5 +1,5 @@
 # Forecasting-SPDR-Gold-Trust-ETF-Prices (PRD)
-This project aims to forecast [SPDR Gold Trust ETF (NYSEARCA: GLD)](https://finance.yahoo.com/quote/GLD/profile?p=GLD) for t=+1 to t=+90. We then build a simple flask app to provide an endpoint to retrieve these forecasts.
+This project aims to forecast daily [SPDR Gold Trust ETF (NYSEARCA: GLD)](https://finance.yahoo.com/quote/GLD/profile?p=GLD) prices in USD for the next 90-days ie for the period t=+1, t=+2, t=+3.... to t=+90. We then build a simple Flask app to provide an endpoint to retrieve these forecasts.
 
 ## Background
 
@@ -87,6 +87,9 @@ You can find a step-by-step guide to run this project [here](https://github.com/
 ## Pipeline explanation
 A walkthrough of the start-to-end script logic is available [here](https://github.com/rianashwin/Forecasting-SPDR-Gold-Trust-ETF-Prices--PRD-/wiki/2.-Pipeline-explanation).
 
+## Technical documentation
+Docstrings of functions used can be found [here](https://github.com/rianashwin/Forecasting-SPDR-Gold-Trust-ETF-Prices--PRD-/wiki/5.-Technical-documentation).
+
 ## Exploratory data analysis
 Key insights noted in our dataset are available [here](https://github.com/rianashwin/Forecasting-SPDR-Gold-Trust-ETF-Prices--PRD-/wiki/3.-Exploratory-data-analysis).
 
@@ -100,7 +103,7 @@ There are number of areas we can improve on
 As explained [here](https://github.com/rianashwin/Forecasting-SPDR-Gold-Trust-ETF-Prices--PRD-/wiki/4.-Results), we seem to be overfitting to the training set. In this first attempt, we did not spend much time tuning our models to handle this. We can consider tuning our decision trees better moving forward.
 
 ### 2. More data
-We should ideally aim to obtain data around supply. This is possible be a key determinant for gold prices. We can likely identify supply of key exporting nations, and use that as a proxy of global supply.
+We should ideally aim to obtain data around supply. This is possibly a key determinant of gold prices. We can likely identify supply of key exporting nations, and use that as a proxy of global supply.
 
 ### 3. Saving historical forecasts
 At present, we overwrite our forecasts at each run. Ideally, we should saving our forecasts to a database, indexed by date of model run. We should also ideally store our raw data in a database for future use, instead of always running the query from 2011.
@@ -109,6 +112,8 @@ At present, we overwrite our forecasts at each run. Ideally, we should saving ou
 As noted [here](https://github.com/rianashwin/Forecasting-SPDR-Gold-Trust-ETF-Prices--PRD-/wiki/3.-Exploratory-data-analysis), we see a shift in our relationsips at t=2000. We did not dive deeper into what happened here. However, looking into this may give us an insight into whether there has been a fundamental change in the relationships between our variables.
 
 
+## Licensing
+This project is licensed under the terms of the MIT license.
 
 
 ## References
