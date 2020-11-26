@@ -893,3 +893,41 @@ def inspect_issues(this_test_results, this_cached_scaled_data):
         temp_df.plot(x = 'index', y=this_col, kind = 'scatter')
         plt.axvline(x=temp_df.index.max()-(this_horizon+1))
         plt.show()
+
+
+def insert_forecasts_to_table(this_df,this_db_configs):
+    """
+    Writes forecasts to db table
+
+    Parameters
+    ----------
+    this_df : dataframe
+        Forecast results which has been compiled from Yahoo!Finance
+    this_db_configs : json
+        DB login credentials
+
+    Returns
+    -------
+    None
+    """    
+    conn = None
+    try:
+        #https://stackoverflow.com/questions/23103962/how-to-write-dataframe-to-postgres-table 
+        engine = create_engine('postgresql+psycopg2://{}:{}@{}:{}/{}'.format(this_db_configs['user'],this_db_configs['password'],this_db_configs['host'],this_db_configs['port'],this_db_configs['database']))
+
+        this_df.head(0).to_sql(r'"FACT_SAVED_FORECASTS"', engine, if_exists='replace',index=False) #truncates the table
+
+        conn = engine.raw_connection()
+        cur = conn.cursor()
+        output = io.StringIO()
+        this_df.to_csv(output, sep='\t', header=False, index=False)
+        output.seek(0)
+        contents = output.getvalue()
+        cur.copy_from(output, r'"FACT_SAVED_FORECASTS"', null="") # null values become ''
+        conn.commit()        
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()         

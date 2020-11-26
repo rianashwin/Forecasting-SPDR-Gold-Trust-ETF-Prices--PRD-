@@ -20,7 +20,9 @@ from yahoofinancials import YahooFinancials
 import os
 import csv
 import json
-
+import psycopg2
+from sqlalchemy import create_engine
+import io
 import pandas as pd
 import numpy as np
 import seaborn as sns
@@ -103,7 +105,17 @@ start_date = '2010-11-01'
 end_date = (datetime.datetime.now() - datetime.timedelta(1)).strftime("%Y-%m-%d")
 
 placeholder_df = GET_YAHOO_DATA_V001.create_placeholder_df(start_date, end_date)
-GET_YAHOO_DATA_V001.compile_data(start_date, end_date, placeholder_df, ticker_list)
+raw_data = GET_YAHOO_DATA_V001.compile_data(start_date, end_date, placeholder_df, ticker_list)
+#raw_data = pd.read_csv(r'.\DATA\RAW_DATA_TEST_PRD_SCRIPT.csv')
+
+print(raw_data.shape)
+
+# write to db
+with open(r"../db_configs.json") as json_file:
+    db_configs = json.load(json_file)
+
+GET_YAHOO_DATA_V001.delete_db_rows(db_configs)
+GET_YAHOO_DATA_V001.insert_yahoo_data_to_table(raw_data,db_configs)
 
 
 #######################################################
@@ -112,9 +124,6 @@ GET_YAHOO_DATA_V001.compile_data(start_date, end_date, placeholder_df, ticker_li
   
 dict_features = {}    
 
-# load data
-raw_data = pd.read_csv(r'.\DATA\RAW_DATA.csv')
-#raw_data = pd.read_csv(r'.\DATA\RAW_DATA_TEST_PRD_SCRIPT.csv')
 try:
     raw_data.Date = pd.to_datetime(raw_data.Date, format='%Y-%m-%d')
 except ValueError:
@@ -124,6 +133,7 @@ raw_data = RUN_MODEL_V002.remove_missing_targets(raw_data,target_var)
 filled_data = RUN_MODEL_V002.treat_missing_feature_values_adjusted(my_verbose, raw_data)
 after_data = filled_data.iloc[2000:] # time stamp to use
 after_data.reset_index(drop=True,inplace=True)
+
 
 if environment == "PRD":
     # if prd, create 90 blank rows
@@ -229,13 +239,19 @@ if environment == "QAS":
     test_results = RUN_MODEL_V002.generate_test_results(test_results,prediction_date)
     RUN_MODEL_V002.plot_test_results(test_results)
 
-# output results
-todays_date = datetime.datetime.now().strftime("%Y-%m-%d")
+# output results for flask
 test_results.to_csv(r'.\RESULTS\saved_forecasts_{}.csv'.format(environment),index=False)
+CONVERT_FORECASTS_TO_JSON_V001.convert_forecasts_to_json()
 
-cached_descaled_data.to_csv(r'.\RESULTS\saved_descaled_data.csv',index=False)    
-cached_scaled_data.to_csv(r'.\RESULTS\saved_scaled_data.csv',index=False)   
+# save results tb db
+test_results["Forecast_as_at_date"] = [after_data.iloc[0]["Date"]]*90
+RUN_MODEL_V002.insert_forecasts_to_table(test_results,db_configs)
+
+# if in QAS, saving data for debugging
+if environment == "QAS":
+    cached_descaled_data.to_csv(r'.\RESULTS\saved_descaled_data.csv',index=False)    
+    cached_scaled_data.to_csv(r'.\RESULTS\saved_scaled_data.csv',index=False)   
 print("\nCompleted successfully")
 ending_time = datetime.datetime.now().replace(microsecond=0)
-CONVERT_FORECASTS_TO_JSON_V001.convert_forecasts_to_json()
+
 print("Total elapsed time: ", ending_time-starting_time)
