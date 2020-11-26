@@ -49,6 +49,7 @@ The following is the expected project structure. These folders are created by th
 ├── environment.yml                     <- Conda environment definition for ensuring consistent setup across environments
 ├── LICENSE
 ├── README.md                           <- The top-level README for developers using this project.
+├── automate_spdr_workflow_github.bat   <- Batch file for workflow automation.
 ├── requirements.txt                    <- The requirements file for reproducing the analysis environment, e.g.
 │                                          Might not be needed if using environment.yml.
 │
