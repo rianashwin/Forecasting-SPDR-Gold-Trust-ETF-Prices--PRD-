@@ -60,6 +60,7 @@ The following is the expected project structure. These folders are created by th
 │   ├── CONVERT_FORECASTS_TO_JSON.py    <- Converts saved forecasts to json, for consumption in Flask. Called within RUN_PIPELINE.py
 │   ├── GET_FORECASTS.py                <- Script for Flask app, to provide an endpoint to query forecasts
 │   ├── Multi_1_to_90_days_DEV.ipynb    <- Jupyter notebook for model development. Useful for visualising data trends, training and validation losses, model tuning, features selection. Important for development, not to be used in production setting.
+│   ├── VW_FORECASTS.sql                <- SQL statement to create view in PostgreSQL database
 │   └── EDA_pt2.ipynb                   <- Jupyter notebook for exploratory data analysis. Contains key insights around concept drift, data detrending etc.
 │
 ├── DATA
