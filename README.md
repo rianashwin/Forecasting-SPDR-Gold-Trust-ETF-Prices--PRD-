@@ -106,8 +106,8 @@ As explained [here](https://github.com/rianashwin/Forecasting-SPDR-Gold-Trust-ET
 ### 2. More data
 We should ideally aim to obtain data around supply. This is possibly a key determinant of gold prices. We can likely identify supply of key exporting nations, and use that as a proxy of global supply.
 
-### 3. Saving historical forecasts
-At present, we overwrite our forecasts at each run. Ideally, we should saving our forecasts to a database, indexed by date of model run. We should also ideally store our raw data in a database for future use, instead of always running the query from 2011.
+### 3. Saving historical data
+We should ideally store our raw data in a database for future use, instead of always running the query from 2011. At present, regenerating the entire dataset means we do not have to worry about deltas in our data, hence why we go with this approach.
 
 ### 4. Investigate t=2000
 As noted [here](https://github.com/rianashwin/Forecasting-SPDR-Gold-Trust-ETF-Prices--PRD-/wiki/3.-Exploratory-data-analysis), we see a shift in our relationsips at t=2000. We did not dive deeper into what happened here. However, looking into this may give us an insight into whether there has been a fundamental change in the relationships between our variables.
