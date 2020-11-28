@@ -133,7 +133,7 @@ raw_data = RUN_MODEL_V002.remove_missing_targets(raw_data,target_var)
 filled_data = RUN_MODEL_V002.treat_missing_feature_values_adjusted(my_verbose, raw_data)
 after_data = filled_data.iloc[2000:] # time stamp to use
 after_data.reset_index(drop=True,inplace=True)
-
+forecasts_as_at_date = [after_data.iloc[-1]["Date"]]*90
 
 if environment == "PRD":
     # if prd, create 90 blank rows
@@ -244,7 +244,7 @@ test_results.to_csv(r'.\RESULTS\saved_forecasts_{}.csv'.format(environment),inde
 CONVERT_FORECASTS_TO_JSON_V001.convert_forecasts_to_json()
 
 # save results tb db
-test_results["Forecast_as_at_date"] = [after_data.iloc[0]["Date"]]*90
+test_results["Forecast_as_at_date"] = forecasts_as_at_date
 RUN_MODEL_V002.insert_forecasts_to_table(test_results,db_configs)
 
 # if in QAS, saving data for debugging
