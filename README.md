@@ -113,6 +113,12 @@ We should ideally store our raw data in a database for future use, instead of al
 ### 4. Investigate t=2000
 As noted [here](https://github.com/rianashwin/Forecasting-SPDR-Gold-Trust-ETF-Prices--PRD-/wiki/3.-Exploratory-data-analysis), we see a shift in our relationsips at t=2000. We did not dive deeper into what happened here. However, looking into this may give us an insight into whether there has been a fundamental change in the relationships between our variables. This step is critical. By dropping data before t=2000, we lose a large amount of our training data. If we can retain more samples from this discarded data, it allows our model to have more examples to learn from. Care must be taken to ensure relationships are still valid across time.
 
+### 5. Treatment of outliers
+I have simplistically removed outliers from the dataset without establishing if these outliers are meaningful or are noise in our data. More work could have gone in to studying these outliers, especially because our final models are tree-based, which are not affected by outliers.
+
+### 6. Resampling in training and validation set
+I have split samples randomly between training and validation, which could explain why we seem to be overfitting. More work could have gone in to ensure a more meaningful distribution is retained.
+
 
 ## Licensing
 This project is licensed under the terms of the MIT license.
